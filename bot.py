@@ -21,7 +21,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         # Tombol join
         keyboard = [
-            [InlineKeyboardButton("📢 Join Channel", url=f"https://t.me/{CHANNEL_USERNAME.replace('@','')}")],
+            [InlineKeyboardButton("📢 Join Channel", url=f"https://t.me/slengean22('@','')}")],
             [InlineKeyboardButton("🔁 Coba Lagi", callback_data="check_join")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
