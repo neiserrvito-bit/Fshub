@@ -26,14 +26,15 @@ async def start(client, message):
 
     if not await is_joined_all(client, user_id):
         keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton("📢 Channel 1", url=f"https://t.me/{CHANNEL_1.replace('@','')}")],
-            [InlineKeyboardButton("📢 Channel 2", url=f"https://t.me/{CHANNEL_2.replace('@','')}")],
-            [InlineKeyboardButton("👥 Join Group", url=f"https://t.me/{GROUP.replace('@','')}")],
-            [InlineKeyboardButton("✅ Coba Lagi", callback_data="check_join")]
+            [InlineKeyboardButton("ᴊᴏɪɴ ᴅᴜʟᴜ", url=f"https://t.me/{CHANNEL_1.replace('@','')}")], [InlineKeyboardButton("ᴊᴏɪɴ ʟᴀɢɪ", url=f"https://t.me/{CHANNEL_2.replace('@','')}")],
+            [InlineKeyboardButton("ᴊᴏɪɴ ʟᴀɢɪ", url=f"https://t.me/{GROUP.replace('@','')}")],
+            [InlineKeyboardButton("ᴄᴏʙᴀ ʟᴀɢɪ", callback_data="check_join")]
         ])
 
         await message.reply_text(
-            "❌ Wajib join semua dulu bro!\nKlik tombol bawah 👇",
+            "Anda harus bergabung di Channel/Grup saya Terlebih dahulu untuk Melihat File yang saya Bagikan
+
+Silakan Join Ke Channel & Group Terlebih Dahulu\nKlik tombol bawah 👇",
             reply_markup=keyboard
         )
     else:
