@@ -1,35 +1,30 @@
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from config import *
 
-from config import BOT_TOKEN, CHANNEL_1, CHANNEL_2, GROUP
+app = Client(
+    "bot",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN
+)
 
-app = Client("fshub", bot_token=BOT_TOKEN)
-
-
-# 🔍 CEK JOIN SEMUA
+# 🔍 cek join semua
 async def is_joined_all(client, user_id):
     try:
-        ch1 = await client.get_chat_member(CHANNEL_1, user_id)
-        ch2 = await client.get_chat_member(CHANNEL_2, user_id)
-        grp = await client.get_chat_member(GROUP, user_id)
-
-        return (
-            ch1.status in ["member", "administrator", "creator"]
-            and ch2.status in ["member", "administrator", "creator"]
-            and grp.status in ["member", "administrator", "creator"]
-        )
+        await client.get_chat_member(CHANNEL_1, user_id)
+        await client.get_chat_member(CHANNEL_2, user_id)
+        await client.get_chat_member(GROUP, user_id)
+        return True
     except:
         return False
-
 
 # 🚀 START
 @app.on_message(filters.command("start"))
 async def start(client, message):
     user_id = message.from_user.id
 
-    joined = await is_joined_all(client, user_id)
-
-    if not joined:
+    if not await is_joined_all(client, user_id):
         keyboard = InlineKeyboardMarkup([
             [InlineKeyboardButton("📢 Channel 1", url=f"https://t.me/{CHANNEL_1.replace('@','')}")],
             [InlineKeyboardButton("📢 Channel 2", url=f"https://t.me/{CHANNEL_2.replace('@','')}")],
@@ -42,24 +37,16 @@ async def start(client, message):
             reply_markup=keyboard
         )
     else:
-        await message.reply_text(
-            "🔥 Mantap! Lu udah join semua\nAkses file kebuka 🚀"
-        )
+        await message.reply_text("🔥 Mantap! Lu udah join semua, akses kebuka!")
 
-
-# 🔁 CEK ULANG
+# 🔁 BUTTON CEK ULANG
 @app.on_callback_query(filters.regex("check_join"))
-async def check_join(client, callback_query):
-    user_id = callback_query.from_user.id
+async def check_join(client, query: CallbackQuery):
+    user_id = query.from_user.id
 
-    joined = await is_joined_all(client, user_id)
-
-    if joined:
-        await callback_query.message.edit_text(
-            "🔥 Verified! Lu udah join semua 🚀"
-        )
+    if await is_joined_all(client, user_id):
+        await query.message.edit_text("🔥 Mantap! Lu udah join semua, akses kebuka!")
     else:
-        await callback_query.answer("❌ Masih ada yang belum lu join!", show_alert=True)
-
+        await query.answer("❌ Masih belum join semua!", show_alert=True)
 
 app.run()
