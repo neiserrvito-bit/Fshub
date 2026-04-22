@@ -1,5 +1,9 @@
 BOT_TOKEN = "8635273696:AAENB8pad3OdVx8B33b1L32xMT77WVAZ7Vw"
 
+API_ID = 35019041
+API_HASH = "131c3a26243bbd2e6c67fac16df78a72"
+
 CHANNEL_1 = "@slengean22"
 CHANNEL_2 = "@bringas22"
 GROUP = "@sloter_gacor_indonesia"
+ADMINS = [1864465487]
