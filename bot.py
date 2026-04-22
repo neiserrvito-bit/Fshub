@@ -1,61 +1,79 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    CallbackQueryHandler,
+    ContextTypes
+)
 from config import BOT_TOKEN, CHANNEL_USERNAME
 
-# START COMMAND
+
+# 🔥 FUNCTION CEK MEMBER
+async def is_user_joined(bot, user_id):
+    try:
+        member = await bot.get_chat_member(CHANNEL_USERNAME, user_id)
+        return member.status in ["member", "administrator", "creator"]
+    except:
+        return False
+
+
+# 🚀 START COMMAND
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     user_id = user.id
 
-    try:
-        member = await context.bot.get_chat_member(CHANNEL_USERNAME, user_id)
+    joined = await is_user_joined(context.bot, user_id)
 
-        # Kalau user SUDAH join
-        if member.status in ["member", "administrator", "creator"]:
-            await update.message.reply_text(
-                f"✅ Hello {user.first_name}\n\nLu udah join, silakan akses file 🔥"
-            )
-        else:
-            raise Exception("Belum join")
-
-    except:
-        # Tombol join
+    if joined:
+        await update.message.reply_text(
+            f"✅ Halo {user.first_name}!\nLu udah join, silakan akses file 🔥"
+        )
+    else:
         keyboard = [
-            [InlineKeyboardButton("📢 Join Channel", url=f"https://t.me/slengean22('@','')}")],
-            [InlineKeyboardButton("🔁 Coba Lagi", callback_data="check_join")]
+            [InlineKeyboardButton(
+                "📢 Join Channel",
+                url=f"https://t.me/{CHANNEL_USERNAME.replace('@','')}"
+            )],
+            [InlineKeyboardButton(
+                "🔄 Coba Lagi",
+                callback_data="check_join"
+            )]
         ]
+
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         await update.message.reply_text(
-            f"🚫 Hello {user.first_name}\n\nLu harus join channel dulu buat akses file!",
+            "🚫 Lu harus join channel dulu ya!\n\nKlik tombol bawah 👇",
             reply_markup=reply_markup
         )
 
-# BUTTON HANDLER
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+# 🔄 BUTTON CEK ULANG
+async def check_join(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
     user_id = query.from_user.id
+    joined = await is_user_joined(context.bot, user_id)
 
-    try:
-        member = await context.bot.get_chat_member(CHANNEL_USERNAME, user_id)
-
-        if member.status in ["member", "administrator", "creator"]:
-            await query.edit_message_text(
-                "✅ Mantap! Lu udah join.\n\nSekarang akses file terbuka 🔥"
-            )
-        else:
-            raise Exception("Belum join")
-
-    except:
+    if joined:
+        await query.edit_message_text(
+            "✅ Mantap! Lu udah join.\nSekarang akses file kebuka 🔥"
+        )
+    else:
         await query.answer("❌ Masih belum join bro 😅", show_alert=True)
 
-# MAIN
-app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CallbackQueryHandler(button))
+# 🚀 MAIN APP
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-print("Bot jalan...")
-app.run_polling()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(check_join))
+
+    print("🤖 Bot jalan...")
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
