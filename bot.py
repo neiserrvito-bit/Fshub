@@ -12,11 +12,21 @@ app = Client(
 # 🔍 cek join semua
 async def is_joined_all(client, user_id):
     try:
-        await client.get_chat_member(CHANNEL_1, user_id)
-        await client.get_chat_member(CHANNEL_2, user_id)
-        await client.get_chat_member(GROUP, user_id)
-        return True
-    except:
+        ch1 = await client.get_chat_member(CHANNEL_1, user_id)
+        ch2 = await client.get_chat_member(CHANNEL_2, user_id)
+        grp = await client.get_chat_member(GROUP, user_id)
+
+        if (
+            ch1.status in ["member", "administrator", "creator"] and
+            ch2.status in ["member", "administrator", "creator"] and
+            grp.status in ["member", "administrator", "creator"]
+        ):
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        print(e)
         return False
 
 # 🚀 START
